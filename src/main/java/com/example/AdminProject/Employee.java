@@ -27,7 +27,7 @@ public class Employee
     private String empName;
     @Email(message = "Email Should not be Null")
     private String empEmail;
-    @NotNull(message = "Please Enter Numbers")
+    @NotNull(message = "Please Enter only Numbers")
     private Long empPhoneNumber;
 
 

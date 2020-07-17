@@ -27,4 +27,9 @@ public class AdminProjectApplication {
 				.build();
 	}
 
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
+
 }
