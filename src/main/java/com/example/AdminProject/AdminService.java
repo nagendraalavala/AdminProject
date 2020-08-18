@@ -1,25 +1,50 @@
 package com.example.AdminProject;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AdminService
 {
-    @Autowired
+   // private Logger logger = (Logger) LoggerFactory.getLogger(AdminProjectApplication.class);
+
+    private ModelMapper modelMapper;
     private AdminRepo repo;
+    private EmployeeDTO employeeDTO;
+    private EmployeeDAO employeeDAO;
+
+    public AdminService(ModelMapper modelMapper, AdminRepo repo) {
+        this.modelMapper = modelMapper;
+        this.repo = repo;
+        this.employeeDTO = new EmployeeDTO();
+        this.employeeDAO = new EmployeeDAO();
+    }
 
     //addEmployees
-    public Employee addEmployee(Employee employee)
+    public EmployeeDAO addEmployee(EmployeeDTO employeeDTO)
     {
-        return repo.save(employee);
+        EmployeeEntity employee = modelMapper.map(employeeDTO,
+                EmployeeEntity.class);
+        repo.save(employee);
+
+        Optional<EmployeeEntity> foundEmployee = repo.findById(employee.getId());
+        if(foundEmployee.isPresent())
+        {
+            EmployeeEntity newEmployee = foundEmployee.get();
+            employeeDAO.setId(newEmployee.getId());
+            employeeDAO.setStatus("Employee Created");
+
+        }
+        return employeeDAO;
     }
 
     //findAllEmployees
-    public List<Employee> allEmployees()
+    public List<EmployeeEntity> allEmployees()
     {
       return repo.findAll();
     }
@@ -27,34 +52,29 @@ public class AdminService
     //deleteEmployee
     public String deleteEmployee(Long id)
     {
-        Optional<Employee> employee = repo.findById(id);
-        Employee employee1 = employee.get();
-        if(employee.isPresent())
-        {
+        Optional<EmployeeEntity> employee = repo.findById(id);
+        EmployeeEntity employee1 = employee.get();
+        if(employee.isPresent()) {
             repo.delete(employee1);
-            return "User Deleted";
+        }
+        return (employee.isPresent())?"Employee Deleted": "Employee Not Found";
 
-        }
-        else
-        {
-            return "Id Not Found";
-        }
 
     }
 
     //findById
-    public Optional<Employee> findEmployeedById(Long id)
+    public EmployeeEntity findEmployeedById(Long id)
     {
-        return repo.findById(id);
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Id Not Found"));
 
     }
 
     //UpdateEmployee
-    public Object updateEmployee(Employee newInfo, Long id)
+    public Object updateEmployee(EmployeeEntity newInfo, Long id)
 
     {
-        Optional<Employee> emp = repo.findById(id);
-        Employee oldInfo = emp.get();
+        Optional<EmployeeEntity> emp = repo.findById(id);
+        EmployeeEntity oldInfo = emp.get();
         if (emp.isPresent())
         {
             oldInfo.setEmpUsername(newInfo.getEmpUsername());

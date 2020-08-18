@@ -2,24 +2,32 @@ package com.example.AdminProject;
 
 
 import lombok.Data;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Auditable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import sun.rmi.runtime.Log;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Data
-public class Employee
+public class EmployeeEntity
 {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     @NotBlank(message = "Username Should not be Null")
     private String empUsername;
     @NotBlank(message = "Password Should not be Null")
+    @Transient
     private String empPassword;
     @NotBlank(message = "Department Should not be Null")
     private String empDepartment;
@@ -29,6 +37,9 @@ public class Employee
     private String empEmail;
     @NotNull(message = "Please Enter only Numbers")
     private Long empPhoneNumber;
+    private String status;
+    private String contractStatus;
+
 
 
 }
